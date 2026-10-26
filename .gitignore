@@ -1,0 +1,6 @@
+.DS_Store
+Thumbs.db
+*.py
+__pycache__/
+.vercel
+BRIEFING_E_FOTOS/

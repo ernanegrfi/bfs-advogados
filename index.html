@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>BFS Advogados — Sociedade de Advogados | Goiânia e Brasil</title>
+  <meta name="description" content="BFS Advogados. Banca jurídica de alto padrão com atuação empresarial, previdenciária, tributária, cível e desportiva. Sede no Setor Universitário em Goiânia e atendimento em todo o Brasil.">
+  <link rel="canonical" href="https://advocaciabfs.adv.br">
+
+  <!-- Open Graph / WhatsApp Sharing -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://advocaciabfs.adv.br">
+  <meta property="og:title" content="BFS Advogados — Sociedade de Advogados">
+  <meta property="og:description" content="Tradição que inspira confiança. Banca jurídica com atuação empresarial, previdenciária, tributária e cível.">
+  <meta property="og:image" content="https://advocaciabfs.adv.br/assets/images/hero_duo_wall.jpg">
+  <!-- Favicon Oficial com o Símbolo Vetorizado da Coluna BFS -->
+  <link rel="icon" type="image/svg+xml" href="assets/logo/bfs_logo_symbol.svg">
+  <link rel="apple-touch-icon" href="assets/logo/bfs_logo_symbol.svg">
+
+  <!-- Tipografia Oficial: Inter (Bold/Black) + Playfair Display (Italic Bold) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,600;1,700;1,800&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            stoneHero: '#F7F6F2',
+            stonePaper: '#FAF9F6',
+            stoneBorder: '#CDCBC2',
+            charcoal950: '#111827',
+            charcoal900: '#1A1D20',
+            charcoal800: '#2B313A',
+            charcoal700: '#4A5568',
+            bfsBlue: '#0649CC',
+            bfsBlueHover: '#053DB0',
+            bfsCobalt: '#0A3B96',
+            bfsDeepNavy: '#062054',
+            bfsCyan: '#38BDF8'
+          },
+          fontFamily: {
+            sans: ['"Inter"', 'system-ui', '-apple-system', 'sans-serif'],
+            display: ['"Inter"', '"Montserrat"', 'sans-serif'],
+            serif: ['"Playfair Display"', 'Georgia', 'serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    html {
+      -webkit-tap-highlight-color: transparent;
+      scroll-behavior: smooth;
+    }
+    body {
+      background-color: #E8E7E2;
+      color: #1A1E24;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    ::selection {
+      background: #0649CC;
+      color: #FFFFFF;
+    }
+
+    /* Textura de Granulado Tátil */
+    .grain-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      pointer-events: none;
+      opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+      z-index: 999;
+    }
+
+    /* Pílula de Ação Azul Royal Oficial (Sem bolinhas) */
+    .btn-royal-pill {
+      background-color: #0649CC;
+      color: #FFFFFF;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 4px 16px rgba(6, 73, 204, 0.32);
+    }
+    .btn-royal-pill:hover {
+      background-color: #053DB0;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 26px rgba(6, 73, 204, 0.48);
+    }
+
+    /* Cards de Advogados na Seção Azul */
+    .attorney-col {
+      transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .attorneys-container:hover .attorney-col:not(:hover) {
+      opacity: 0.42;
+      filter: blur(1px);
+      transform: scale(0.97);
+    }
+    .attorney-col:hover {
+      opacity: 1 !important;
+      filter: none !important;
+      transform: translateY(-6px) scale(1.02);
+      z-index: 20;
+    }
+  </style>
+</head>
+<body class="relative">
+
+  <!-- Textura Tátil Editorial -->
+  <div class="grain-overlay"></div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       BARRA INSTITUCIONAL SUPERIOR (Fiel ao Mockup do Cliente)
+       ══════════════════════════════════════════════════════════════════════ -->
+  <div class="border-b border-stoneBorder bg-stoneHero py-2.5 px-4 sm:px-8 text-xs sm:text-[13px] font-sans text-charcoal800 relative z-50">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+      <div class="flex items-center gap-2 text-charcoal700 font-normal">
+        <span>Sede física em Goiânia</span>
+        <span class="text-charcoal400">·</span>
+        <span>Atendimento digital em todo o Brasil</span>
+      </div>
+      <div class="flex items-center gap-4 text-xs sm:text-[13px]">
+        <a href="https://wa.me/556230876144" target="_blank" class="hover:text-bfsBlue transition flex items-center gap-1.5 text-charcoal900">
+          <i data-lucide="phone" class="w-3.5 h-3.5 text-bfsBlue fill-bfsBlue"></i>
+          <span>(62) <strong class="font-bold text-charcoal950">3087-6144</strong></span>
+        </a>
+        <span class="text-stoneBorder font-light">|</span>
+        <a href="https://instagram.com/bfsadvogadoss" target="_blank" class="hover:text-bfsBlue transition flex items-center gap-1.5 text-charcoal900">
+          <i data-lucide="instagram" class="w-3.5 h-3.5 text-bfsBlue"></i>
+          <span class="font-medium">@bfsadvogados</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       CABEÇALHO PRINCIPAL
+       ══════════════════════════════════════════════════════════════════════ -->
+  <header class="sticky top-0 z-40 w-full transition-all duration-300 backdrop-blur-md bg-stoneHero/95 border-b border-stoneBorder">
+    <div class="max-w-7xl mx-auto px-4 sm:px-8 h-20 flex items-center justify-between">
+      
+      <!-- Logo Vetorizada Oficial BFS Advogados -->
+      <a href="#inicio" class="flex items-center gap-3.5 group">
+        <img src="assets/logo/bfs_logo_horizontal.svg" alt="BFS Advogados" class="h-11 sm:h-12 w-auto transition-transform duration-300 group-hover:scale-[1.02]">
+      </a>
+
+      <!-- Menu Principal Fiel ao Mockup: Sentence Case & Active Indicator -->
+      <nav class="hidden lg:flex items-center gap-8 text-[14px] font-medium text-charcoal800 font-sans">
+        <a href="#inicio" class="text-bfsBlue relative pb-1 font-semibold">
+          Início
+          <span class="absolute -bottom-1.5 left-0 w-full h-[2.5px] bg-bfsBlue rounded-full"></span>
+        </a>
+        <a href="#a-banca" class="hover:text-bfsBlue transition-colors">A banca</a>
+        <a href="#corpo-juridico" class="hover:text-bfsBlue transition-colors">Corpo jurídico</a>
+        <a href="#areas" class="hover:text-bfsBlue transition-colors">Áreas de atuação</a>
+        <a href="#sede" class="hover:text-bfsBlue transition-colors">Sede e abrangência</a>
+        <a href="#contato" class="hover:text-bfsBlue transition-colors">Contato</a>
+      </nav>
+
+      <!-- Botão CTA no Topo: AGENDAR CONSULTA → -->
+      <div class="flex items-center gap-3">
+        <a href="https://wa.me/556230876144?text=Ol%C3%A1%2C%20gostaria%20de%20agendar%20uma%20consulta%20com%20a%20equipe%20da%20BFS%20Advogados." 
+           target="_blank" 
+           class="bg-bfsBlue hover:bg-bfsBlueHover text-white px-6 py-2.5 rounded-full text-xs font-bold tracking-wider uppercase inline-flex items-center gap-2 shadow-sm transition-all hover:scale-[1.02]">
+          <span>AGENDAR CONSULTA</span>
+          <i data-lucide="arrow-right" class="w-4 h-4 stroke-[2.5]"></i>
+        </a>
+
+        <!-- Botão Menu Mobile -->
+        <button id="mobileMenuBtn" class="lg:hidden p-2 rounded-lg border border-stoneBorder text-charcoal950 bg-white">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Dropdown Mobile -->
+    <div id="mobileMenu" class="hidden lg:hidden bg-stonePaper border-b border-stoneBorder px-6 py-6 space-y-4 font-sans text-sm font-medium">
+      <a href="#inicio" class="block text-bfsBlue font-bold">Início</a>
+      <a href="#a-banca" class="block text-charcoal900 hover:text-bfsBlue">A banca</a>
+      <a href="#corpo-juridico" class="block text-charcoal900 hover:text-bfsBlue">Corpo jurídico</a>
+      <a href="#areas" class="block text-charcoal900 hover:text-bfsBlue">Áreas de atuação</a>
+      <a href="#sede" class="block text-charcoal900 hover:text-bfsBlue">Sede e abrangência</a>
+      <a href="#contato" class="block text-charcoal900 hover:text-bfsBlue">Contato</a>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       HERO SECTION — 100% FIEL AO MOCKUP DO CLIENTE
+       BFS (Ultra Black) + Advogados (Playfair Italic Royal Blue) + Marca d'Água
+       ══════════════════════════════════════════════════════════════════════ -->
+  <section id="inicio" class="relative pt-14 pb-20 sm:pt-20 sm:pb-28 bg-stoneHero overflow-hidden border-b border-stoneBorder">
+    
+    <!-- MARCA D'ÁGUA AZUL REAL NO FUNDO À DIREITA -->
+    <div class="absolute right-[-8%] sm:right-[-4%] lg:right-[0%] top-[48%] -translate-y-1/2 w-[480px] sm:w-[680px] lg:w-[860px] pointer-events-none select-none opacity-[0.22] transition-all duration-700">
+      <img src="assets/logo/bfs_logo_symbol.svg" alt="Símbolo BFS" class="w-full h-auto">
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-8 relative z-10">
+      
+      <!-- HEADLINE BFS ADVOGADOS (ESCALA GIGANTE FIEL À REFERÊNCIA) -->
+      <div class="max-w-5xl select-none">
+        
+        <h1 class="text-[22vw] sm:text-[18vw] lg:text-[13rem] font-sans font-black text-[#1A1D20] leading-[0.78] tracking-tight uppercase">
+          BFS
+        </h1>
+
+        <h2 class="text-[18vw] sm:text-[15vw] lg:text-[10.5rem] font-serif italic font-bold text-bfsBlue leading-[0.88] tracking-tight -mt-3 sm:-mt-6 lg:-mt-10">
+          Advogados
+        </h2>
+
+      </div>
+
+      <!-- Divisória & Métricas de Autoridade -->
+      <div class="w-full max-w-lg border-t border-[#B8B6AD] pt-4 mt-8 sm:mt-12">
+        <p class="text-[11px] sm:text-xs font-sans font-bold tracking-[0.22em] text-[#2B313A] uppercase leading-relaxed">
+          MAIS DE 5 ANOS DE HISTÓRIA INSTITUCIONAL<br>
+          MAIS DE 40 ANOS DE AUTORIDADE FORENSE SOMADA
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       SEÇÃO 02 — TRANSIÇÃO EDITORIAL, HISTÓRIA & NÚMEROS (BOLD & LEGÍVEL)
+       ══════════════════════════════════════════════════════════════════════ -->
+  <section id="a-banca" class="py-24 sm:py-32 bg-stonePaper border-b border-stoneBorder">
+    <div class="max-w-7xl mx-auto px-4 sm:px-8">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+        
+        <!-- Coluna Esquerda: Título Editorial com Linha Azul Inferior (Fiel ao Mockup) -->
+        <div class="lg:col-span-5 space-y-3">
+          <p class="text-xs font-sans uppercase tracking-[0.22em] text-bfsBlue font-extrabold">A BANCA</p>
+          <h2 class="text-4xl sm:text-5xl font-serif font-bold text-charcoal950 leading-tight">
+            Tradição que inspira confiança.
+            <span class="block w-20 h-[3px] bg-bfsBlue mt-3"></span>
+          </h2>
+        </div>
+
+        <!-- Coluna Direita: Narrativa de Fundação -->
+        <div class="lg:col-span-8 space-y-8">
+          
+          <p class="text-xl sm:text-2xl text-charcoal950 font-medium leading-relaxed font-sans">
+            Fundada pelos sócios <strong class="font-extrabold text-charcoal950">Dr. Rúbeo Carlos da Silva</strong>, <strong class="font-extrabold text-charcoal950">Dr. José Antonio Freitas Junior</strong> e <strong class="font-extrabold text-charcoal950">Dr. Pedro Paulo Borges Souza</strong>, e fortalecida pela vasta experiência do decano <strong class="font-extrabold text-charcoal950">Dr. José Gildo dos Santos</strong>, a BFS nasceu para prestar um serviço jurídico ágil, resolutivo e próximo do cliente.
+          </p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-6 border-t border-stoneBorder">
+            <div class="space-y-2">
+              <h4 class="text-sm font-sans uppercase tracking-wider text-charcoal950 font-extrabold">Atendimento Direto com os Sócios</h4>
+              <p class="text-sm text-charcoal800 leading-relaxed font-medium font-sans">
+                Cada cliente trata diretamente com os advogados titulares responsáveis pela condução da causa, sem intermediários ou termos jurídicos desnecessários.
+              </p>
+            </div>
+            <div class="space-y-2">
+              <h4 class="text-sm font-sans uppercase tracking-wider text-charcoal950 font-extrabold">Atuação Híbrida em Todo o País</h4>
+              <p class="text-sm text-charcoal800 leading-relaxed font-medium font-sans">
+                Estrutura preparada para acolher clientes presencialmente na sede física de Goiânia ou em processos digitais eletrônicos em qualquer comarca do Brasil.
+              </p>
+            </div>
+          </div>
+
+          <!-- Métricas Chave em Negrito Forte -->
+          <div class="grid grid-cols-3 gap-6 pt-6 border-t border-stoneBorder font-sans">
+            <div>
+              <p class="text-4xl sm:text-5xl font-display font-black text-bfsBlue">+500</p>
+              <p class="text-xs sm:text-sm font-sans font-bold text-charcoal950 uppercase mt-1">Concessões Previdenciárias</p>
+            </div>
+            <div>
+              <p class="text-4xl sm:text-5xl font-display font-black text-charcoal950">+40 <span class="text-sm font-bold text-charcoal700">anos</span></p>
+              <p class="text-xs sm:text-sm font-sans font-bold text-charcoal950 uppercase mt-1">Bagagem Jurídica Somada</p>
+            </div>
+            <div>
+              <p class="text-4xl sm:text-5xl font-display font-black text-charcoal950">100%</p>
+              <p class="text-xs sm:text-sm font-sans font-bold text-charcoal950 uppercase mt-1">Cobertura Nacional</p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       SEÇÃO 03 — CORPO JURÍDICO TITULAR (O BLOCO AZUL COBALTO MONUMENTAL)
+       Fotos COLORIDAS originais + Hover Dinâmico + Texto formatado sem cortes
+       ══════════════════════════════════════════════════════════════════════ -->
+  <section id="corpo-juridico" class="relative py-24 sm:py-32 bg-bfsCobalt text-white overflow-hidden transition-all duration-700">
+    
+    <!-- Luz Ambiental Dinâmica que reage suavemente ao Hover -->
+    <div id="ambientGlow" class="absolute inset-0 pointer-events-none transition-all duration-700 bg-[radial-gradient(circle_at_20%_35%,rgba(56,189,248,0.22)_0%,transparent_60%)]"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-8 relative z-10">
+      
+      <!-- Cabeçalho da Seção -->
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between pb-10 border-b border-white/20 mb-12 gap-6">
+        <div>
+          <p class="text-xs font-sans uppercase tracking-widest text-sky-300 font-extrabold mb-2">Corpo Jurídico Titular</p>
+          <h2 class="text-3xl sm:text-5xl font-display font-black">Sócios e Advogados Especialistas</h2>
+        </div>
+        <p class="text-xs sm:text-sm font-sans text-sky-100 max-w-xs text-left sm:text-right font-medium">
+          Passe o mouse sobre os profissionais para conhecer a trajetória e as áreas de atuação.
+        </p>
+      </div>
+
+      <!-- FILEIRA DE CARDS DE ADVOGADOS (Fotos COLORIDAS em alta resolução) -->
+      <div class="attorneys-container grid grid-cols-2 md:grid-cols-5 gap-3 sm:gap-4 mb-14" id="attorneysGrid">
+        
+        <!-- CARD 1: Dr. Pedro Paulo Borges Souza (Com Foto Colorida Oficial) -->
+        <div class="attorney-col cursor-pointer bg-white/5 hover:bg-white/10 rounded-2xl p-3 sm:p-4 border border-white/20 transition-all duration-300 group"
+             data-id="pedro"
+             data-name="Dr. Pedro Paulo Borges Souza"
+             data-oab="OAB/GO 58.778"
+             data-role="Sócio Fundador"
+             data-areas="Assessoria Jurídica Empresarial — Direito Previdenciário — Direito Tributário"
+             data-bio="Com 6 anos de forte atuação no mercado, coordena a Assessoria Jurídica Empresarial da BFS, oferecendo blindagem societária e contratual para empresas de múltiplos segmentos. Na esfera previdenciária, já liderou e homologou mais de 500 benefícios concedidos junto ao INSS e à Justiça Federal."
+             data-whatsapp="https://wa.me/556230876144?text=Ol%C3%A1%2C%20gostaria%20de%20falar%20com%20o%20Dr.%20Pedro%20Paulo%20Borges.">
+          
+          <div class="aspect-[3/4] rounded-xl overflow-hidden bg-slate-900 mb-4 relative border border-white/15">
+            <img src="assets/images/attorney_pedro_color.jpg" alt="Dr. Pedro Paulo Borges Souza" class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105">
+            <div class="absolute bottom-2 left-2 bg-bfsBlue/95 backdrop-blur-md px-2.5 py-1 rounded text-[11px] font-sans font-bold">
+              OAB/GO 58.778
+            </div>
+          </div>
+          
+          <div class="space-y-1">
+            <h3 class="text-sm sm:text-base font-bold text-white group-hover:text-sky-300 transition-colors">Dr. Pedro Paulo</h3>
+            <p class="text-xs font-sans font-semibold text-sky-200">Sócio Fundador</p>
+          </div>
+        </div>
+
+        <!-- CARD 2: Dr. Rúbeo Carlos da Silva (Com Foto Colorida Oficial) -->
+        <div class="attorney-col cursor-pointer bg-white/5 hover:bg-white/10 rounded-2xl p-3 sm:p-4 border border-white/20 transition-all duration-300 group"
+             data-id="rubeo"
+             data-name="Dr. Rúbeo Carlos da Silva"
+             data-oab="OAB/GO 25.211"
+             data-role="Sócio Fundador"
+             data-areas="Direito Previdenciário — Cível e Sucessões — Contencioso Estratégico"
+             data-bio="Graduado pela Universidade Salgado de Oliveira com especialização em Direito Previdenciário. Atua na vanguarda da defesa patrimonial de famílias, inventários céleres, planejamento previdenciário e condução de litígios cíveis complexos."
+             data-whatsapp="https://wa.me/556230876144?text=Ol%C3%A1%2C%20gostaria%20de%20falar%20com%20o%20Dr.%20R%C3%BAbeo%20Carlos.">
+          
+          <div class="aspect-[3/4] rounded-xl overflow-hidden bg-slate-900 mb-4 relative border border-white/15">
+            <img src="assets/images/attorney_rubeo_color.jpg" alt="Dr. Rúbeo Carlos da Silva" class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105">
+            <div class="absolute bottom-2 left-2 bg-bfsBlue/95 backdrop-blur-md px-2.5 py-1 rounded text-[11px] font-sans font-bold">
+              OAB/GO 25.211
+            </div>
+          </div>
+          
+          <div class="space-y-1">
+            <h3 class="text-sm sm:text-base font-bold text-white group-hover:text-sky-300 transition-colors">Dr. Rúbeo Carlos</h3>
+            <p class="text-xs font-sans font-semibold text-sky-200">Sócio Fundador</p>
+          </div>
+        </div>
+
+        <!-- CARD 3: Dr. José Gildo dos Santos (Consultor Sênior - Histórico Desportivo) -->
+        <div class="attorney-col cursor-pointer bg-white/5 hover:bg-white/10 rounded-2xl p-3 sm:p-4 border border-white/20 transition-all duration-300 group"
+             data-id="gildo"
+             data-name="Dr. José Gildo dos Santos"
+             data-oab="OAB/GO 6.976"
+             data-role="Consultor Sênior | Mais de 40 Anos de Carreira"
+             data-areas="Direito Desportivo Profissional — Direito do Trabalho — Família e Sucessões — Membro AGATRA"
+             data-bio="Formado pela Universidade Federal de Goiás (UFG 1978/1983) com especialização acadêmica em Direito de Família (1984/1985 UFG). Atua há mais de 40 anos como uma das maiores referências do Direito Desportivo e Trabalhista em Goiás. Ex-assessor jurídico de Vila Nova F.C., Atlético Goianiense, Grêmio Inhumense, Morrinhos e Brasiliense; atual assessor da Associação Atlética Aparecidense. Patrono histórico de atletas como Fernandão, Alex Dias, Aloísio Chulapa, Túlio Lustosa e técnicos como Evair, Jorginho e Zé Teodoro."
+             data-whatsapp="https://wa.me/556230876144?text=Ol%C3%A1%2C%20gostaria%20de%20consultoria%20com%20o%20Dr.%20Jos%C3%A9%20Gildo%20dos%20Santos.">
+          
+          <div class="aspect-[3/4] rounded-xl overflow-hidden bg-slate-900 mb-4 relative border border-white/15 flex items-center justify-center">
+            <div class="w-full h-full flex flex-col items-center justify-center p-4 bg-gradient-to-b from-slate-800 to-slate-950 text-center">
+              <i data-lucide="award" class="w-12 h-12 text-sky-300 mb-2 opacity-90"></i>
+              <p class="text-xs font-sans text-sky-200 uppercase font-extrabold">Decano da Banca</p>
+              <p class="text-[11px] font-bold text-slate-300 mt-1">UFG • 1983</p>
+            </div>
+            <div class="absolute bottom-2 left-2 bg-emerald-700/95 backdrop-blur-md px-2.5 py-1 rounded text-[11px] font-sans font-bold">
+              OAB/GO 6.976
+            </div>
+          </div>
+          
+          <div class="space-y-1">
+            <h3 class="text-sm sm:text-base font-bold text-white group-hover:text-sky-300 transition-colors">Dr. José Gildo</h3>
+            <p class="text-xs font-sans font-semibold text-sky-200">Consultor Sênior</p>
+          </div>
+        </div>
+
+        <!-- CARD 4: Dr. José Antonio Freitas Junior (Sócio Co-Fundador - Placeholder com Gatilho) -->
+        <div class="attorney-col cursor-pointer bg-white/5 hover:bg-white/10 rounded-2xl p-3 sm:p-4 border border-white/20 transition-all duration-300 group"
+             data-id="freitas"
+             data-name="Dr. José Antonio Freitas Junior"
+             data-oab="Advogado Sócio"
+             data-role="Sócio Co-Fundador"
+             data-areas="Direito Civil — Contratos Comerciais — Estruturação Jurídica"
+             data-bio="Membro da formação fundadora original da banca BFS Advogados, com papel ativo na consolidação do escritório no ecossistema corporativo goiano."
+             data-whatsapp="https://wa.me/556230876144?text=Ol%C3%A1%2C%20gostaria%20de%20contato%20com%20o%20Dr.%20Jos%C3%A9%20Antonio%20Freitas.">
+          
+          <div class="aspect-[3/4] rounded-xl overflow-hidden bg-slate-900 mb-4 relative border border-white/15 flex items-center justify-center">
+            <div class="w-full h-full flex flex-col items-center justify-center p-4 bg-gradient-to-b from-slate-800/80 to-slate-950 text-center">
+              <i data-lucide="user-check" class="w-12 h-12 text-slate-300 mb-2 opacity-80"></i>
+              <p class="text-xs font-sans text-sky-200 uppercase font-bold">Ensaio Fotográfico Oficial</p>
+              <p class="text-[10px] font-semibold text-slate-300 mt-1">Em atualização</p>
+            </div>
+            <div class="absolute bottom-2 left-2 bg-white/20 backdrop-blur-md px-2.5 py-1 rounded text-[11px] font-sans font-bold">
+              Sócio BFS
+            </div>
+          </div>
+          
+          <div class="space-y-1">
+            <h3 class="text-sm sm:text-base font-bold text-white group-hover:text-sky-300 transition-colors">Dr. José Antonio</h3>
+            <p class="text-xs font-sans font-semibold text-sky-200">Sócio Fundador</p>
+          </div>
+        </div>
+
+        <!-- CARD 5: Advogado Associado / Corpo Jurídico (Placeholder com Gatilho) -->
+        <div class="attorney-col cursor-pointer bg-white/5 hover:bg-white/10 rounded-2xl p-3 sm:p-4 border border-white/20 transition-all duration-300 group"
+             data-id="associado"
+             data-name="Corpo Jurídico Associado BFS"
+             data-oab="Advocacia Especializada"
+             data-role="Equipe de Apoio e Controladoria Jurídica"
+             data-areas="Triagem Contenciosa — Acompanhamento Processual — Prazos em Tribunais"
+             data-bio="Equipe técnica de advogados associados e especialistas em controladoria forense, garantindo agilidade no protocolo de recursos, cálculo de liquidação e suporte ao cliente em tempo real."
+             data-whatsapp="https://wa.me/556230876144?text=Ol%C3%A1%2C%20gostaria%20de%20atendimento%20com%20a%20equipe%20jur%C3%ADdica%20BFS.">
+          
+          <div class="aspect-[3/4] rounded-xl overflow-hidden bg-slate-900 mb-4 relative border border-white/15 flex items-center justify-center">
+            <div class="w-full h-full flex flex-col items-center justify-center p-4 bg-gradient-to-b from-slate-800/60 to-slate-950 text-center">
+              <i data-lucide="users" class="w-12 h-12 text-slate-300 mb-2 opacity-80"></i>
+              <p class="text-xs font-sans text-sky-200 uppercase font-bold">Equipe Associada</p>
+              <p class="text-[10px] font-semibold text-slate-300 mt-1">Ensaio em atualização</p>
+            </div>
+            <div class="absolute bottom-2 left-2 bg-white/20 backdrop-blur-md px-2.5 py-1 rounded text-[11px] font-sans font-bold">
+              Banca Ativa
+            </div>
+          </div>
+          
+          <div class="space-y-1">
+            <h3 class="text-sm sm:text-base font-bold text-white group-hover:text-sky-300 transition-colors">Corpo Jurídico</h3>
+            <p class="text-xs font-sans font-semibold text-sky-200">Equipe Técnica</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- PAINEL DINÂMICO DE BIOGRAFIA & ÁREAS QUE REAGE AO HOVER -->
+      <div id="attorneyDetailPanel" class="bg-black/35 backdrop-blur-xl rounded-3xl p-6 sm:p-10 border border-white/25 transition-all duration-500">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          
+          <div class="lg:col-span-8 space-y-4">
+            <div class="flex items-center gap-3">
+              <span id="detailBadge" class="px-3.5 py-1 rounded-full bg-white/20 text-sky-300 text-xs font-sans font-extrabold tracking-wider uppercase">
+                Sócio Fundador
+              </span>
+              <span id="detailOab" class="text-xs font-sans font-bold text-slate-200">
+                OAB/GO 58.778
+              </span>
+            </div>
+
+            <h3 id="detailName" class="text-3xl sm:text-5xl font-display font-black text-white">
+              Dr. Pedro Paulo Borges Souza
+            </h3>
+
+            <p id="detailAreas" class="text-sm sm:text-base font-sans text-sky-300 font-bold tracking-wide">
+              Assessoria Jurídica Empresarial — Direito Previdenciário — Direito Tributário
+            </p>
+
+            <p id="detailBio" class="text-base sm:text-lg text-slate-100 font-normal leading-relaxed font-sans">
+              Com 6 anos de forte atuação no mercado, coordena a Assessoria Jurídica Empresarial da BFS, oferecendo blindagem societária e contratual para empresas de múltiplos segmentos. Na esfera previdenciária, já liderou e homologou mais de 500 benefícios concedidos junto ao INSS e à Justiça Federal.
+            </p>
+          </div>
+
+          <div class="lg:col-span-4 flex flex-col justify-center items-start lg:items-end gap-3 border-t lg:border-t-0 lg:border-l border-white/20 pt-6 lg:pt-0 lg:pl-8">
+            <p class="text-xs font-sans text-sky-200 uppercase font-bold tracking-wider">Atendimento Direto:</p>
+            <a id="detailCta" href="https://wa.me/556230876144?text=Ol%C3%A1%2C%20gostaria%20de%20falar%20com%20o%20Dr.%20Pedro%20Paulo%20Borges." 
+               target="_blank"
+               class="btn-royal-pill px-8 py-4 rounded-full text-xs font-extrabold font-sans tracking-wider uppercase flex items-center gap-2 bg-white text-bfsCobalt hover:bg-sky-100">
+              <i data-lucide="message-square" class="w-4 h-4 text-bfsBlue"></i>
+              <span>Agendar com o Titular</span>
+            </a>
+            <span class="text-xs font-sans text-sky-200 font-medium">Central unificada de atendimento</span>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ASSINATURA FORMATADA CORRETAMENTE SEM CORTES DE TEXTO -->
+      <div class="pt-16 sm:pt-20 border-t border-white/15 text-center">
+        <p class="text-xl sm:text-3xl lg:text-4xl font-display font-black text-white/30 uppercase tracking-[0.25em] leading-tight">
+          Corpo Jurídico de Excelência
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       SEÇÃO 04 — ÁREAS DE ATUAÇÃO ESTRATÉGICA (ESTÉTICA MINERAL & BOLD)
+       ══════════════════════════════════════════════════════════════════════ -->
+  <section id="areas" class="py-24 sm:py-32 bg-stoneHero border-b border-stoneBorder">
+    <div class="max-w-7xl mx-auto px-4 sm:px-8">
+      
+      <!-- Cabeçalho -->
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between pb-12 border-b border-stoneBorder mb-16 gap-6">
+        <div>
+          <p class="text-xs font-sans uppercase tracking-widest text-bfsBlue font-extrabold mb-2">Especialidades</p>
+          <h2 class="text-4xl sm:text-5xl font-display font-black text-charcoal950">
+            Áreas de Atuação Estratégica
+          </h2>
+        </div>
+        <p class="text-sm sm:text-base font-sans font-medium text-charcoal800 max-w-sm">
+          Soluções personalizadas em direito consultivo, preventivo e contencioso de alta complexidade.
+        </p>
+      </div>
+
+      <!-- Grid Editorial de Especialidades -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        
+        <!-- CARD ÁREA 1: EMPRESARIAL -->
+        <div class="bg-stonePaper p-8 rounded-3xl border border-stoneBorder space-y-5 hover:border-bfsBlue/60 transition-all duration-300 group flex flex-col justify-between shadow-sm">
+          <div class="space-y-4">
+            <span class="text-xs font-sans text-bfsBlue font-extrabold tracking-widest uppercase">Empresarial</span>
+            <h3 class="text-2xl font-bold text-charcoal950 group-hover:text-bfsBlue transition-colors">
+              Assessoria Empresarial e Blindagem
+            </h3>
+            <p class="text-sm text-charcoal800 leading-relaxed font-medium font-sans">
+              Governança corporativa, auditoria contratual, reestruturação societária, recuperação de passivos e defesa contra contingências que colocam em risco o patrimônio dos sócios.
+            </p>
+          </div>
+          <div class="pt-4 border-t border-stoneBorder">
+            <a href="https://wa.me/556230876144?text=Ol%C3%A1%2C%20gostaria%20de%20diagn%C3%B3stico%20jur%C3%ADdico%20empresarial." target="_blank" class="text-xs font-sans font-bold text-bfsBlue hover:underline flex items-center gap-1.5">
+              <span>Consultar Setor Empresarial</span>
+              <i data-lucide="arrow-right" class="w-4 h-4 stroke-[2.5]"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- CARD ÁREA 2: PREVIDENCIÁRIO -->
+        <div class="bg-stonePaper p-8 rounded-3xl border border-stoneBorder space-y-5 hover:border-bfsBlue/60 transition-all duration-300 group flex flex-col justify-between shadow-sm">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-sans text-bfsBlue font-extrabold tracking-widest uppercase">Previdenciário</span>
+              <span class="px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-800 border border-emerald-500/30 text-xs font-sans font-extrabold">+500 Concessões</span>
+            </div>
+            <h3 class="text-2xl font-bold text-charcoal950 group-hover:text-bfsBlue transition-colors">
+              Direito Previdenciário Especializado
+            </h3>
+            <p class="text-sm text-charcoal800 leading-relaxed font-medium font-sans">
+              Planejamento previdenciário para obter o maior benefício cabível, concessão célere de aposentadorias especiais, revisão de valores e recursos contra indeferimentos arbitrários do INSS.
+            </p>
+          </div>
+          <div class="pt-4 border-t border-stoneBorder">
+            <a href="https://wa.me/556230876144?text=Ol%C3%A1%2C%20gostaria%20de%20an%C3%A1lise%20de%20aposentadoria%20ou%20benef%C3%ADcio%20INSS." target="_blank" class="text-xs font-sans font-bold text-bfsBlue hover:underline flex items-center gap-1.5">
+              <span>Calcular Benefício com Especialista</span>
+              <i data-lucide="arrow-right" class="w-4 h-4 stroke-[2.5]"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- CARD ÁREA 3: TRIBUTÁRIO -->
+        <div class="bg-stonePaper p-8 rounded-3xl border border-stoneBorder space-y-5 hover:border-bfsBlue/60 transition-all duration-300 group flex flex-col justify-between shadow-sm">
+          <div class="space-y-4">
+            <span class="text-xs font-sans text-bfsBlue font-extrabold tracking-widest uppercase">Tributário</span>
+            <h3 class="text-2xl font-bold text-charcoal950 group-hover:text-bfsBlue transition-colors">
+              Direito Tributário Estratégico
+            </h3>
+            <p class="text-sm text-charcoal800 leading-relaxed font-medium font-sans">
+              Planejamento fiscal para redução lícita de tributos, recuperação administrativa de créditos tributários pagos indevidamente e defesa em execuções fiscais da União, Estado e Município.
+            </p>
+          </div>
+          <div class="pt-4 border-t border-stoneBorder">
+            <a href="https://wa.me/556230876144?text=Ol%C3%A1%2C%20gostaria%20de%20orienta%C3%A7%C3%A3o%20em%20planejamento%20tribut%C3%A1rio." target="_blank" class="text-xs font-sans font-bold text-bfsBlue hover:underline flex items-center gap-1.5">
+              <span>Reduzir Carga Fiscal</span>
+              <i data-lucide="arrow-right" class="w-4 h-4 stroke-[2.5]"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- CARD ÁREA 4: CÍVEL & SUCESSÕES -->
+        <div class="bg-stonePaper p-8 rounded-3xl border border-stoneBorder space-y-5 hover:border-bfsBlue/60 transition-all duration-300 group flex flex-col justify-between shadow-sm">
+          <div class="space-y-4">
+            <span class="text-xs font-sans text-bfsBlue font-extrabold tracking-widest uppercase">Cível e Sucessões</span>
+            <h3 class="text-2xl font-bold text-charcoal950 group-hover:text-bfsBlue transition-colors">
+              Cível, Família e Sucessões
+            </h3>
+            <p class="text-sm text-charcoal800 leading-relaxed font-medium font-sans">
+              Inventários judiciais e extrajudiciais com foco em velocidade, planejamento sucessório para proteção de herança, divórcios, partilhas amigáveis e litígios imobiliários.
+            </p>
+          </div>
+          <div class="pt-4 border-t border-stoneBorder">
+            <a href="https://wa.me/556230876144?text=Ol%C3%A1%2C%20preciso%20de%20apoio%20em%20invent%C3%A1rio%20ou%20direito%20de%20fam%C3%ADlia." target="_blank" class="text-xs font-sans font-bold text-bfsBlue hover:underline flex items-center gap-1.5">
+              <span>Agendar Consulta Cível</span>
+              <i data-lucide="arrow-right" class="w-4 h-4 stroke-[2.5]"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- CARD ÁREA 5: TRABALHISTA & DESPORTIVO (Destaque Dr. José Gildo) -->
+        <div class="bg-stonePaper p-8 rounded-3xl border border-stoneBorder space-y-5 hover:border-bfsBlue/60 transition-all duration-300 group flex flex-col justify-between md:col-span-2 shadow-sm">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-sans text-bfsBlue font-extrabold tracking-widest uppercase">Trabalhista e Desportivo</span>
+              <span class="px-3 py-1 rounded-full bg-bfsBlue/15 text-bfsBlue border border-bfsBlue/30 text-xs font-sans font-extrabold">+40 Anos de Autoridade</span>
+            </div>
+            <h3 class="text-2xl font-bold text-charcoal950 group-hover:text-bfsBlue transition-colors">
+              Direito do Trabalho e Desportivo Profissional
+            </h3>
+            <p class="text-sm text-charcoal800 leading-relaxed font-medium font-sans">
+              Chancelada pela trajetória do Dr. José Gildo dos Santos, nossa equipe atua na assessoria e defesa de clubes profissionais (com histórico no Vila Nova, Atlético-GO, Aparecidense, Brasiliense), atletas consagrados, treinadores e grandes empresas em dissídios trabalhistas complexos no TRT e TST.
+            </p>
+          </div>
+          <div class="pt-4 border-t border-stoneBorder flex items-center justify-between">
+            <a href="https://wa.me/556230876144?text=Ol%C3%A1%2C%20preciso%20de%20assessoria%20trabalhista%20ou%20desportiva." target="_blank" class="text-xs font-sans font-bold text-bfsBlue hover:underline flex items-center gap-1.5">
+              <span>Falar com o Setor Trabalhista e Desportivo</span>
+              <i data-lucide="arrow-right" class="w-4 h-4 stroke-[2.5]"></i>
+            </a>
+            <span class="text-xs font-sans font-bold text-charcoal700 hidden sm:inline">Defesas em todas as instâncias</span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       SEÇÃO 05 — SEDE FÍSICA NO SETOR UNIVERSITÁRIO & MODELO DIGITAL
+       ══════════════════════════════════════════════════════════════════════ -->
+  <section id="sede" class="py-24 sm:py-32 bg-stonePaper border-b border-stoneBorder">
+    <div class="max-w-7xl mx-auto px-4 sm:px-8">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        
+        <div class="lg:col-span-5 space-y-6">
+          <p class="text-xs font-sans uppercase tracking-widest text-bfsBlue font-extrabold">Localização e Alcance</p>
+          <h2 class="text-4xl sm:text-5xl font-display font-black text-charcoal950 leading-tight">
+            Nossa Sede em Goiânia e Atendimento em Todo o Brasil
+          </h2>
+          <p class="text-base text-charcoal800 leading-relaxed font-medium font-sans">
+            Privacidade, conforto e segurança para reuniões presenciais estratégicas em nossa sede no Setor Universitário, aliada a um atendimento 100% digital com assinatura eletrônica e acompanhamento via WhatsApp.
+          </p>
+
+          <div class="space-y-4 pt-4 border-t border-stoneBorder font-sans">
+            <div class="flex items-start gap-4">
+              <div class="w-11 h-11 rounded-xl bg-stoneHero border border-stoneBorder flex items-center justify-center text-bfsBlue shrink-0">
+                <i data-lucide="map-pin" class="w-5 h-5 stroke-[2.5]"></i>
+              </div>
+              <div>
+                <p class="text-xs font-sans text-charcoal700 uppercase font-black">Endereço da Sede</p>
+                <p class="text-base font-bold text-charcoal950">Rua 260, nº 632, Setor Universitário</p>
+                <p class="text-xs font-semibold text-charcoal800">Goiânia — Goiás | CEP 74.610-240</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4">
+              <div class="w-11 h-11 rounded-xl bg-stoneHero border border-stoneBorder flex items-center justify-center text-emerald-600 shrink-0">
+                <i data-lucide="phone-call" class="w-5 h-5 stroke-[2.5]"></i>
+              </div>
+              <div>
+                <p class="text-xs font-sans text-charcoal700 uppercase font-black">Central Telefônica e WhatsApp</p>
+                <a href="https://wa.me/556230876144" target="_blank" class="text-base font-extrabold text-charcoal950 hover:text-bfsBlue transition">
+                  (62) 3087-6144
+                </a>
+                <p class="text-xs font-semibold text-charcoal800">Triagem imediata com advogado responsável</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fotografia da Equipe em Reunião Executiva -->
+        <div class="lg:col-span-7">
+          <div class="relative rounded-3xl overflow-hidden border border-stoneBorder shadow-xl group">
+            <img src="assets/images/duo_meeting_desk.jpg" 
+                 alt="Mesa executiva da BFS Advocacia" 
+                 class="w-full h-[400px] sm:h-[480px] object-cover transition-transform duration-700 group-hover:scale-105">
+            <div class="absolute inset-0 bg-gradient-to-t from-charcoal950/80 via-transparent to-transparent"></div>
+            
+            <div class="absolute bottom-6 left-6 right-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+              <div class="space-y-1">
+                <span class="px-3 py-1 rounded-full bg-bfsBlue text-white text-xs font-sans font-extrabold uppercase">
+                  Sede Oficial
+                </span>
+                <p class="text-xl font-display text-white font-extrabold">Goiânia — Setor Universitário</p>
+              </div>
+              <a href="https://maps.google.com/?q=Rua+260+632+Setor+Universitario+Goiania" target="_blank" class="px-6 py-3 rounded-full bg-white hover:bg-slate-100 text-charcoal950 text-xs font-sans font-extrabold transition flex items-center gap-2 self-start sm:self-auto shadow-md">
+                <i data-lucide="external-link" class="w-4 h-4 text-bfsBlue stroke-[2.5]"></i>
+                <span>Ver no Google Maps</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       SEÇÃO 06 — FORMULÁRIO DE TRIAGEM DIRETA PARA WHATSAPP
+       ══════════════════════════════════════════════════════════════════════ -->
+  <section id="contato" class="py-24 sm:py-32 bg-stoneHero">
+    <div class="max-w-7xl mx-auto px-4 sm:px-8">
+      
+      <div class="max-w-3xl mx-auto bg-stonePaper rounded-3xl p-8 sm:p-14 border border-stoneBorder shadow-xl space-y-8">
+        
+        <div class="text-center space-y-3">
+          <p class="text-xs font-sans uppercase tracking-widest text-bfsBlue font-extrabold">Atendimento</p>
+          <h2 class="text-3xl sm:text-4xl font-display font-black text-charcoal950">
+            Iniciar Consulta Jurídica
+          </h2>
+          <p class="text-sm sm:text-base text-charcoal800 max-w-lg mx-auto font-medium leading-relaxed font-sans">
+            Preencha os campos abaixo. Ao clicar em enviar, sua mensagem será automaticamente formatada e aberta na conversa oficial da nossa central de atendimento no WhatsApp.
+          </p>
+        </div>
+
+        <form id="contactForm" class="space-y-6 font-sans">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-xs font-sans text-charcoal950 font-black uppercase mb-2">Seu Nome Completo *</label>
+              <input type="text" id="formNome" required placeholder="Ex: Roberto Alencar / Mariana Costa" 
+                     class="w-full bg-white border border-stoneBorder rounded-xl px-4 py-3.5 text-sm text-charcoal950 font-medium focus:outline-none focus:border-bfsBlue focus:ring-2 focus:ring-bfsBlue/30 transition shadow-sm">
+            </div>
+
+            <div>
+              <label class="block text-xs font-sans text-charcoal950 font-black uppercase mb-2">Seu WhatsApp com DDD *</label>
+              <input type="tel" id="formTelefone" required placeholder="(62) 99999-9999" 
+                     class="w-full bg-white border border-stoneBorder rounded-xl px-4 py-3.5 text-sm text-charcoal950 font-medium focus:outline-none focus:border-bfsBlue focus:ring-2 focus:ring-bfsBlue/30 transition shadow-sm">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-sans text-charcoal950 font-black uppercase mb-2">Área Jurídica de Interesse *</label>
+            <select id="formArea" class="w-full bg-white border border-stoneBorder rounded-xl px-4 py-3.5 text-sm text-charcoal950 font-medium focus:outline-none focus:border-bfsBlue focus:ring-2 focus:ring-bfsBlue/30 transition shadow-sm">
+              <option value="Assessoria Jurídica Empresarial">Assessoria Jurídica Empresarial e Contratos</option>
+              <option value="Direito Previdenciário (Aposentadoria / INSS)">Direito Previdenciário (Aposentadorias e Revisões)</option>
+              <option value="Direito Tributário e Planejamento Fiscal">Direito Tributário e Redução Fiscal</option>
+              <option value="Cível, Família, Inventários e Imóveis">Cível, Família, Inventários e Imóveis</option>
+              <option value="Direito do Trabalho ou Desportivo">Direito do Trabalho ou Desportivo</option>
+              <option value="Outra Demanda Específica">Outra Demanda Específica</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-sans text-charcoal950 font-black uppercase mb-2">Resumo da Demanda (Opcional)</label>
+            <textarea id="formMensagem" rows="3" placeholder="Descreva sucintamente o seu objetivo ou dúvida..." 
+                      class="w-full bg-white border border-stoneBorder rounded-xl px-4 py-3.5 text-sm text-charcoal950 font-medium focus:outline-none focus:border-bfsBlue focus:ring-2 focus:ring-bfsBlue/30 transition shadow-sm"></textarea>
+          </div>
+
+          <div class="pt-2">
+            <button type="submit" class="btn-royal-pill w-full py-4 rounded-xl text-xs font-black tracking-widest uppercase font-sans flex items-center justify-center gap-2">
+              <span>Enviar e Abrir Conversa no WhatsApp</span>
+            </button>
+            <p class="text-center text-xs font-sans font-bold text-charcoal700 mt-4">
+              <i data-lucide="lock" class="w-3.5 h-3.5 inline mr-1 text-emerald-600 stroke-[2.5]"></i>
+              Sigilo garantido pelo Código de Ética e Disciplina da Ordem dos Advogados do Brasil.
+            </p>
+          </div>
+        </form>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       RODAPÉ INSTITUCIONAL (Sem palavras em inglês)
+       ══════════════════════════════════════════════════════════════════════ -->
+  <footer class="bg-charcoal950 text-white py-16 border-t border-stoneDark">
+    <div class="max-w-7xl mx-auto px-4 sm:px-8">
+      
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-10 pb-12 border-b border-white/10 font-sans">
+        
+        <div class="md:col-span-5 space-y-4">
+          <img src="assets/logo/bfs_logo_horizontal_white.svg" alt="BFS Advocacia" class="h-10 w-auto">
+          <p class="text-xs text-slate-300 leading-relaxed max-w-sm font-medium">
+            BFS Sociedade de Advogados. Tradição forense, rigor técnico e combatividade estratégica em causas corporativas, tributárias, previdenciárias e cíveis.
+          </p>
+          <p class="text-xs font-bold text-slate-300">
+            Sede: Rua 260, nº 632, Setor Universitário, Goiânia — GO
+          </p>
+        </div>
+
+        <div class="md:col-span-3 space-y-3 text-xs">
+          <p class="text-sky-300 uppercase tracking-widest font-black">Navegação</p>
+          <ul class="space-y-2 text-slate-200 font-semibold">
+            <li><a href="#inicio" class="hover:text-white transition">Início</a></li>
+            <li><a href="#a-banca" class="hover:text-white transition">A Banca</a></li>
+            <li><a href="#corpo-juridico" class="hover:text-white transition">Corpo Jurídico</a></li>
+            <li><a href="#areas" class="hover:text-white transition">Áreas de Atuação</a></li>
+            <li><a href="#sede" class="hover:text-white transition">Sede e Abrangência</a></li>
+          </ul>
+        </div>
+
+        <div class="md:col-span-4 space-y-3 text-xs">
+          <p class="text-sky-300 uppercase tracking-widest font-black">Canais Oficiais</p>
+          <p class="text-slate-200 font-medium">WhatsApp: <strong class="text-white font-bold">(62) 3087-6144</strong></p>
+          <p class="text-slate-200 font-medium">E-mail: <strong class="text-white font-bold">bfsadvogadosgo@gmail.com</strong></p>
+          <p class="text-slate-200 font-medium">Instagram: <strong class="text-white font-bold">@bfsadvogadoss</strong></p>
+          <p class="text-slate-300 text-xs font-semibold pt-1">Atendimento presencial e digital em todo o Brasil</p>
+        </div>
+
+      </div>
+
+      <div class="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-300 gap-4 font-sans font-semibold">
+        <div>
+          © 2026 BFS Advocacia. Todos os direitos reservados.
+        </div>
+        <div class="flex items-center gap-6">
+          <span>OAB Seccional Goiás</span>
+          <a href="#inicio" class="hover:text-white transition">Voltar ao Topo ↑</a>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- Botão Flutuante Permanente do WhatsApp (Sem bolinhas) -->
+  <a href="https://wa.me/556230876144?text=Ol%C3%A1%2C%20gostaria%20de%20falar%20com%20a%20equipe%20da%20BFS%20Advocacia." 
+     target="_blank" 
+     class="fixed bottom-6 right-6 z-50 p-4 rounded-full bg-bfsBlue hover:bg-bfsBlueHover text-white shadow-2xl transition-all duration-300 hover:scale-110 flex items-center justify-center group"
+     title="Conversar pelo WhatsApp">
+    <i data-lucide="message-circle" class="w-6 h-6"></i>
+    <span class="max-w-0 overflow-hidden whitespace-nowrap group-hover:max-w-xs transition-all duration-300 font-sans text-xs font-extrabold px-0 group-hover:px-2 uppercase tracking-wider">
+      WhatsApp BFS
+    </span>
+  </a>
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       SCRIPTS: Lucide + Hover Dinâmico de Advogados + Envio WhatsApp
+       ══════════════════════════════════════════════════════════════════════ -->
+  <script>
+    // Inicializa ícones Lucide
+    lucide.createIcons();
+
+    // Menu Mobile
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    if (mobileMenuBtn && mobileMenu) {
+      mobileMenuBtn.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+      });
+      mobileMenu.querySelectorAll('a').forEach(l => {
+        l.addEventListener('click', () => mobileMenu.classList.add('hidden'));
+      });
+    }
+
+    // MECÂNICA INTERATIVA DA SEÇÃO AZUL DOS ADVOGADOS:
+    const attorneyCols = document.querySelectorAll('.attorney-col');
+    const detailBadge = document.getElementById('detailBadge');
+    const detailOab = document.getElementById('detailOab');
+    const detailName = document.getElementById('detailName');
+    const detailAreas = document.getElementById('detailAreas');
+    const detailBio = document.getElementById('detailBio');
+    const detailCta = document.getElementById('detailCta');
+    const ambientGlow = document.getElementById('ambientGlow');
+
+    const glowPositions = {
+      'pedro': 'circle at 15% 35%, rgba(56, 189, 248, 0.28) 0%, transparent 60%',
+      'rubeo': 'circle at 35% 35%, rgba(14, 165, 233, 0.28) 0%, transparent 60%',
+      'gildo': 'circle at 50% 35%, rgba(52, 211, 153, 0.28) 0%, transparent 60%',
+      'freitas': 'circle at 70% 35%, rgba(99, 102, 241, 0.28) 0%, transparent 60%',
+      'associado': 'circle at 85% 35%, rgba(168, 85, 247, 0.28) 0%, transparent 60%'
+    };
+
+    attorneyCols.forEach(col => {
+      col.addEventListener('mouseenter', () => {
+        const id = col.dataset.id;
+        const name = col.dataset.name;
+        const oab = col.dataset.oab;
+        const role = col.dataset.role;
+        const areas = col.dataset.areas;
+        const bio = col.dataset.bio;
+        const wa = col.dataset.whatsapp;
+
+        detailBadge.textContent = role;
+        detailOab.textContent = oab;
+        detailName.textContent = name;
+        detailAreas.textContent = areas;
+        detailBio.textContent = bio;
+        detailCta.href = wa;
+
+        if (ambientGlow && glowPositions[id]) {
+          ambientGlow.style.background = `radial-gradient(${glowPositions[id]})`;
+        }
+      });
+    });
+
+    // Formulário com redirecionamento formatado para a Central WhatsApp Oficial
+    const contactForm = document.getElementById('contactForm');
+    if (contactForm) {
+      contactForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const nome = document.getElementById('formNome').value.trim();
+        const telefone = document.getElementById('formTelefone').value.trim();
+        const area = document.getElementById('formArea').value;
+        const mensagem = document.getElementById('formMensagem').value.trim();
+
+        let texto = `*SOLICITAÇÃO DE CONSULTA - BFS ADVOCACIA*\n\n`;
+        texto += `Nome: ${nome}\n`;
+        texto += `Telefone/WhatsApp: ${telefone}\n`;
+        texto += `Área Jurídica: ${area}\n`;
+        if (mensagem) {
+          texto += `Resumo: ${mensagem}\n`;
+        }
+        texto += `\nMensagem enviada pelo site oficial BFS Advocacia.`;
+
+        const url = `https://wa.me/556230876144?text=${encodeURI(texto)}`;
+        window.open(url, '_blank');
+      });
+    }
+  </script>
+  <!-- Botão Flutuante WhatsApp Oficial (Fiel ao Mockup) -->
+  <a href="https://wa.me/556230876144?text=Ol%C3%A1%2C%20gostaria%20de%20atendimento%20da%20BFS%20Advogados." 
+     target="_blank" 
+     rel="noopener noreferrer"
+     aria-label="Atendimento WhatsApp BFS Advogados"
+     class="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-bfsBlue hover:bg-bfsBlueHover text-white shadow-2xl flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 group">
+    <i data-lucide="message-circle" class="w-7 h-7 fill-white stroke-none"></i>
+  </a>
+
+</body>
+</html>
