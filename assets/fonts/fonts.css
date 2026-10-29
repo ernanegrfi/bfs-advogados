@@ -1,0 +1,49 @@
+@font-face {
+  font-family: 'Bodoni Moda';
+  font-style: italic;
+  font-weight: 500;
+  font-display: swap;
+  src: url(bfs-font-0.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Bodoni Moda';
+  font-style: italic;
+  font-weight: 600;
+  font-display: swap;
+  src: url(bfs-font-1.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Bodoni Moda';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(bfs-font-2.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Bodoni Moda';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(bfs-font-3.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(bfs-font-4.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(bfs-font-5.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(bfs-font-6.ttf) format('truetype');
+}
