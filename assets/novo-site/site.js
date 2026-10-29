@@ -33,11 +33,17 @@
  function requestNavigation() { if (!ticking) { ticking = true; requestAnimationFrame(updateNavigation); } }
  function updateHeader() {
   if (innerWidth > 1100 && !menu.hidden) closeMenu();
+  if (innerWidth <= 1100) header.classList.remove('is-compact');
+  else if (window.scrollY > 48) header.classList.add('is-compact');
+  else if (window.scrollY < 12) header.classList.remove('is-compact');
   document.documentElement.style.setProperty('--header', `${header.offsetHeight}px`);
   requestNavigation();
  }
- addEventListener('scroll', requestNavigation, {passive:true});
+ addEventListener('scroll', updateHeader, {passive:true});
  addEventListener('resize', updateHeader, {passive:true});
+ new ResizeObserver(() => {
+  document.documentElement.style.setProperty('--header', `${header.offsetHeight}px`);
+ }).observe(header);
  updateHeader();
  document.querySelectorAll('.area-toggle').forEach(button => {
   button.addEventListener('click', () => {
@@ -50,11 +56,12 @@
    });
   });
  });
- document.querySelectorAll('[data-area]').forEach(link => link.addEventListener('click', () => {
-  const select = document.querySelector('#area');
-  select.value = link.dataset.area;
-  select.removeAttribute('aria-invalid'); document.querySelector('#erro-area').hidden = true;
- }));
+ document.querySelectorAll('[data-area]').forEach(link => {
+  const message = `Olá! Estava no site da BFS Advogados e me interessei pela área de ${link.dataset.area}. Gostaria de saber mais sobre a atuação e agendar uma consulta.`;
+  link.href = `https://wa.me/556230876144?text=${encodeURIComponent(message)}`;
+  link.target = '_blank';
+  link.rel = 'noopener noreferrer';
+ });
  const profiles = {
   pedro:{name:'Dr. Pedro Paulo Borges Souza',role:'Sócio coordenador',bio:'Coordena a Assessoria Jurídica Empresarial e Previdenciária da BFS, com atuação na consultoria corporativa e na defesa de benefícios em instâncias administrativas e judiciais.'},
   rubeo:{name:'Dr. Rúbeo Carlos da Silva',role:'Sócio coordenador',bio:'Integra a coordenação da BFS Advogados, com atuação em Direito Previdenciário, Cível, Família e Sucessões e atendimento próximo aos clientes.'},
