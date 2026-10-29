@@ -45,6 +45,11 @@
   document.documentElement.style.setProperty('--header', `${header.offsetHeight}px`);
  }).observe(header);
  updateHeader();
+ document.querySelectorAll('a[href="#inicio"]').forEach(link => link.addEventListener('click', e => {
+  e.preventDefault();
+  history.replaceState(null, '', '#inicio');
+  window.scrollTo({top:0, behavior:matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'});
+ }));
  document.querySelectorAll('.area-toggle').forEach(button => {
   button.addEventListener('click', () => {
    const shouldOpen = button.getAttribute('aria-expanded') !== 'true';
