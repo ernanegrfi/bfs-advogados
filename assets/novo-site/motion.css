@@ -1,0 +1,18 @@
+/* Motion answers navigation and clicks; it never controls scrolling. */
+.banca-art>.banca-line-art{display:block;width:100%;height:100%}
+.motion-line-art{overflow:visible;pointer-events:none}
+.area-item{transition:background-color .25s ease}
+.area-toggle{transition:padding-block .28s ease}
+.area-name{transform-origin:left center;transition:transform .28s ease,color .28s ease}
+.area-toggle:focus-visible .area-name{color:var(--gold-text)}
+.area-body.is-moving{overflow:hidden;will-change:height,opacity}
+.profile-open:active img{filter:brightness(.96)}
+.button{transition:background-color .2s ease,box-shadow .2s ease}
+.button:active{box-shadow:inset 0 2px 6px #0003}
+@media(hover:hover) and (pointer:fine){
+.area-item:has(.area-toggle:hover),.area-item:focus-within{background:#eeeae2}
+.area-toggle:hover{padding-block:25px}
+.area-toggle:hover .area-name{transform:translateX(4px) scale(1.025);color:var(--gold-text)}
+.area-toggle:hover .area-number{transform:translateX(3px)}
+}
+@media(prefers-reduced-motion:reduce){.area-toggle,.area-name,.area-item,.button{transition:none!important}.area-toggle:hover{padding-block:20px}.area-toggle:hover .area-name{transform:none}}

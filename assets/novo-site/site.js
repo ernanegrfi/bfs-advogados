@@ -50,17 +50,6 @@
   history.replaceState(null, '', '#inicio');
   window.scrollTo({top:0, behavior:matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'});
  }));
- document.querySelectorAll('.area-toggle').forEach(button => {
-  button.addEventListener('click', () => {
-   const shouldOpen = button.getAttribute('aria-expanded') !== 'true';
-   document.querySelectorAll('.area-toggle').forEach(other => {
-    const open = other === button && shouldOpen;
-    other.setAttribute('aria-expanded', String(open));
-    document.getElementById(other.getAttribute('aria-controls')).hidden = !open;
-    other.querySelector('.area-sign').textContent = open ? '−' : '+';
-   });
-  });
- });
  document.querySelectorAll('[data-area]').forEach(link => {
   const message = `Olá! Estava no site da BFS Advogados e me interessei pela área de ${link.dataset.area}. Gostaria de saber mais sobre a atuação e agendar uma consulta.`;
   link.href = `https://wa.me/556230876144?text=${encodeURIComponent(message)}`;
