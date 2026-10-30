@@ -68,6 +68,7 @@
   link.rel = 'noopener noreferrer';
  });
  const profiles = {
+  welvia:{"name":"Dra. Wélvia Moraes de Queiroz Ribeiro","role":"Advogada","registration":"OAB 78.491","areas":"Direito Civil, Previdenciário, Trabalhista e Tributário","bio":"Graduada em Direito desde 2018, cursa pós-graduação em Direito Tributário e em Direito Civil e Processo Civil.\n\nAcredita em uma advocacia próxima do cliente, com escuta atenta e orientações claras. Atua com responsabilidade e dedicação na defesa de direitos, buscando soluções adequadas às particularidades de cada caso."},
   pedro:{name:'Dr. Pedro Paulo Borges Souza',role:'Sócio coordenador',bio:'Coordena a Assessoria Jurídica Empresarial e Previdenciária da BFS, com atuação na consultoria corporativa e na defesa de benefícios em instâncias administrativas e judiciais.'},
   rubeo:{name:'Dr. Rúbeo Carlos da Silva',role:'Sócio coordenador',bio:'Integra a coordenação da BFS Advogados, com atuação em Direito Previdenciário, Cível, Família e Sucessões e atendimento próximo aos clientes.'},
   gildo:{name:'Dr. José Gildo dos Santos',role:'Decano e consultor sênior',bio:'Formado pela Universidade Federal de Goiás em 1983, tem mais de 40 anos de trajetória jurídica, com experiência em Direito do Trabalho e Direito Desportivo.'}
@@ -78,6 +79,12 @@
   document.querySelector('#profile-name').textContent = profile.name;
   document.querySelector('#profile-role').textContent = profile.role;
   document.querySelector('#profile-bio').textContent = profile.bio;
+  const registration = document.querySelector('#profile-registration');
+  registration.textContent = profile.registration || '';
+  registration.hidden = !profile.registration;
+  const areas = document.querySelector('#profile-areas');
+  areas.textContent = profile.areas ? 'Áreas de atuação: ' + profile.areas : '';
+  areas.hidden = !profile.areas;
   dialog.showModal();
  }));
  dialog.querySelector('.dialog-close').addEventListener('click', () => dialog.close());
