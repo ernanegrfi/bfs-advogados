@@ -1,18 +1,269 @@
-/* Motion answers navigation and clicks; it never controls scrolling. */
-.banca-art>.banca-line-art{display:block;width:100%;height:100%}
-.motion-line-art{overflow:visible;pointer-events:none}
-.area-item{transition:background-color .25s ease}
-.area-toggle{transition:padding-block .28s ease}
-.area-name{transform-origin:left center;transition:transform .28s ease,color .28s ease}
-.area-toggle:focus-visible .area-name{color:var(--gold-text)}
-.area-body.is-moving{overflow:hidden;will-change:height,opacity}
-.profile-open:active img{filter:brightness(.96)}
-.button{transition:background-color .2s ease,box-shadow .2s ease}
-.button:active{box-shadow:inset 0 2px 6px #0003}
-@media(hover:hover) and (pointer:fine){
-.area-item:has(.area-toggle:hover),.area-item:focus-within{background:#eeeae2}
-.area-toggle:hover{padding-block:25px}
-.area-toggle:hover .area-name{transform:translateX(4px) scale(1.025);color:var(--gold-text)}
-.area-toggle:hover .area-number{transform:translateX(3px)}
+/* ══════════════════════════════════════════════════════════════
+   BFS ADVOGADOS — MOTION DESIGN & MICRO-INTERAÇÕES DE ELITE
+   Desenvolvido com foco em autoridade, física natural e 60fps
+   ══════════════════════════════════════════════════════════════ */
+
+/* SVG Line Art & Canvas */
+.banca-art > .banca-line-art { display: block; width: 100%; height: 100%; }
+.motion-line-art { overflow: visible; pointer-events: none; }
+
+/* 1. Header & Navegação Superior */
+.site-header {
+  transition: background-color 0.3s ease, backdrop-filter 0.3s ease, -webkit-backdrop-filter 0.3s ease, box-shadow 0.3s ease;
 }
-@media(prefers-reduced-motion:reduce){.area-toggle,.area-name,.area-item,.button{transition:none!important}.area-toggle:hover{padding-block:20px}.area-toggle:hover .area-name{transform:none}}
+.site-header.is-compact {
+  background: rgba(245, 244, 240, 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 4px 24px rgba(4, 31, 58, 0.06);
+}
+.navigation a {
+  transition: color 0.25s ease;
+}
+.navigation a:hover {
+  color: var(--gold-text);
+}
+.navigation a:after {
+  height: 2px;
+  background: var(--gold);
+  border-radius: 1px;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.28s ease;
+}
+
+/* 2. Hero Section */
+.hero-watermark {
+  will-change: transform;
+}
+.hero-next {
+  transition: color 0.25s ease, transform 0.25s ease;
+}
+.hero-next:hover {
+  color: var(--gold-text);
+  transform: translateY(2px);
+}
+.hero-next .icon {
+  animation: heroFloat 2.6s ease-in-out infinite;
+  will-change: transform;
+}
+@keyframes heroFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(5px); }
+}
+
+/* 3. Retratos e Cards da Equipe (Cinematic Hover) */
+.team-grid .profile-portrait {
+  position: relative;
+  overflow: hidden;
+  border-radius: 2px;
+  background: #e6e2d8;
+  cursor: pointer;
+}
+.team-grid .profile-portrait > img {
+  transform-origin: center top;
+  transition: transform 0.75s cubic-bezier(0.16, 1, 0.3, 1), filter 0.45s ease;
+  will-change: transform;
+}
+.team-grid .profile-portrait::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 55%, rgba(4, 31, 58, 0.32) 100%);
+  opacity: 0;
+  transition: opacity 0.45s ease;
+  pointer-events: none;
+}
+.profile-open:hover .profile-portrait > img {
+  transform: scale(1.045);
+}
+.profile-open:hover .profile-portrait::after {
+  opacity: 1;
+}
+.profile-open:active .profile-portrait > img {
+  transform: scale(1.02);
+  filter: brightness(0.96);
+}
+.profile h3 {
+  transition: color 0.25s ease, transform 0.25s ease;
+}
+.profile-open:hover h3 {
+  color: var(--gold-text);
+  transform: translateY(-2px);
+}
+.photo-label {
+  transition: color 0.25s ease, transform 0.25s ease;
+}
+.profile-open:hover .photo-label {
+  transform: translateX(4px);
+  color: var(--gold-text);
+}
+
+/* 4. Modal de Perfil (Dialog) com Backdrop Gradual */
+.profile-dialog {
+  border: 1px solid var(--line);
+  box-shadow: 0 24px 60px rgba(4, 31, 58, 0.18), 0 4px 16px rgba(4, 31, 58, 0.08);
+  border-radius: 3px;
+}
+.profile-dialog::backdrop {
+  background: rgba(4, 31, 58, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  opacity: 0;
+  transition: opacity 0.28s ease;
+}
+.profile-dialog[open]::backdrop {
+  opacity: 1;
+}
+.dialog-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s ease, background-color 0.2s ease;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+}
+.dialog-close:hover {
+  transform: rotate(90deg) scale(1.08);
+  color: var(--gold-text);
+  background: rgba(156, 141, 112, 0.12);
+}
+
+/* 5. Áreas de Atuação (Especialidades & Accordion) */
+.area-item {
+  position: relative;
+  transition: background-color 0.28s ease;
+}
+.area-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--gold);
+  transform: scaleY(0);
+  transform-origin: center;
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.area-toggle {
+  transition: padding-block 0.28s ease;
+}
+.area-name {
+  transform-origin: left center;
+  transition: transform 0.28s ease, color 0.28s ease;
+}
+.area-toggle:focus-visible .area-name {
+  color: var(--gold-text);
+}
+.area-body.is-moving {
+  overflow: hidden;
+  will-change: height, opacity;
+}
+.area-sign {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  font-size: 20px;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), color 0.25s ease;
+  transform-origin: center center;
+}
+.area-number {
+  transition: transform 0.28s ease, color 0.28s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .area-item:has(.area-toggle:hover),
+  .area-item:focus-within {
+    background: #eeeae2;
+  }
+  .area-item:has(.area-toggle:hover)::before,
+  .area-item:focus-within::before {
+    transform: scaleY(1);
+  }
+  .area-toggle:hover {
+    padding-block: 24px;
+  }
+  .area-toggle:hover .area-name {
+    transform: translateX(4px) scale(1.02);
+    color: var(--gold-text);
+  }
+  .area-toggle:hover .area-number {
+    transform: translateX(4px);
+    color: var(--gold-text);
+  }
+}
+.area-toggle[aria-expanded="true"] .area-sign {
+  transform: rotate(180deg);
+  color: var(--gold-text);
+}
+
+/* 6. Botões, Links e Ações Clicáveis */
+.button {
+  position: relative;
+  overflow: hidden;
+  transition: background-color 0.22s ease, box-shadow 0.25s ease, transform 0.12s ease;
+}
+.button:hover {
+  box-shadow: 0 6px 20px rgba(4, 31, 58, 0.22);
+}
+.button:active {
+  transform: scale(0.975);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+.button .arrow {
+  display: inline-block;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+.button:hover .arrow {
+  transform: translate(3px, -3px);
+}
+.text-link {
+  transition: color 0.2s ease, border-color 0.2s ease, transform 0.12s ease;
+}
+.text-link:hover {
+  color: var(--gold-text);
+  border-color: var(--gold-text);
+}
+.text-link:active {
+  transform: scale(0.98);
+}
+
+/* 7. Formulário de Contato e Foco */
+.field input, .field select, .field textarea {
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.2s ease;
+  border-radius: 2px;
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+  border-color: var(--gold-text);
+  box-shadow: 0 0 0 3px rgba(156, 141, 112, 0.15);
+  background-color: #ffffff;
+}
+
+/* 8. Sede Photo */
+.sede-photo {
+  overflow: hidden;
+  border-radius: 2px;
+}
+.sede-photo img {
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+.sede-photo:hover img {
+  transform: scale(1.02);
+}
+
+/* 9. Acessibilidade — Prefers Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .area-toggle, .area-name, .area-item, .button, .hero-next, .hero-next .icon,
+  .team-grid .profile-portrait > img, .team-grid .profile-portrait::after,
+  .dialog-close, .area-sign, .button .arrow, .sede-photo img, .site-header {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+  .area-toggle:hover { padding-block: 20px; }
+  .area-toggle:hover .area-name { transform: none; }
+  .area-toggle:hover .area-number { transform: none; }
+}
