@@ -69,8 +69,8 @@
  });
  const profiles = {
   welvia:{"name":"Dra. Wélvia Moraes de Queiroz Ribeiro","role":"Advogada","registration":"OAB 78.491","areas":"Direito Civil, Previdenciário, Trabalhista e Tributário","bio":"Graduada em Direito desde 2018, cursa pós-graduação em Direito Tributário e em Direito Civil e Processo Civil.\n\nAcredita em uma advocacia próxima do cliente, com escuta atenta e orientações claras. Atua com responsabilidade e dedicação na defesa de direitos, buscando soluções adequadas às particularidades de cada caso."},
-  pedro:{name:'Dr. Pedro Paulo Borges Souza',role:'Sócio coordenador',bio:'Coordena a Assessoria Jurídica Empresarial e Previdenciária da BFS, com atuação na consultoria corporativa e na defesa de benefícios em instâncias administrativas e judiciais.'},
-  rubeo:{name:'Dr. Rúbeo Carlos da Silva',role:'Sócio coordenador',bio:'Integra a coordenação da BFS Advogados, com atuação em Direito Previdenciário, Cível, Família e Sucessões e atendimento próximo aos clientes.'},
+  pedro:{"name":"Dr. Pedro Paulo Borges Souza","role":"Sócio coordenador","registration":"OAB/GO 58.778","areas":"Assessoria Jurídica Empresarial, Direito Previdenciário e Direito Tributário","bio":"Com seis anos de atuação, presta assessoria jurídica empresarial completa, com atendimento personalizado a empresas de diferentes segmentos.\n\nTambém atua em Direito Previdenciário. Ao longo de sua atuação no escritório, já obteve a concessão de mais de 500 benefícios junto ao INSS."},
+  rubeo:{"name":"Dr. Rúbeo Carlos da Silva","role":"Sócio coordenador","registration":"OAB/GO 25.211","areas":"Direito Previdenciário e Direito Cível","bio":"Formado em Direito pela Universidade Salgado de Oliveira, é especialista em Direito Previdenciário.\n\nAtua nas áreas previdenciária e cível."},
   gildo:{name:'Dr. José Gildo dos Santos',role:'Decano e consultor sênior',bio:'Formado pela Universidade Federal de Goiás em 1983, tem mais de 40 anos de trajetória jurídica, com experiência em Direito do Trabalho e Direito Desportivo.'}
  };
  const dialog = document.querySelector('#profile-dialog');
@@ -124,3 +124,4 @@
   status.append(fallback, document.createTextNode('.')); status.hidden = false;
  });
 })();
+
